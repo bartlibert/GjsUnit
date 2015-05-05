@@ -55,7 +55,7 @@ function _processException(e, prefix) {
     }
 
     return result;
-};
+}
 
 // Assertion functions
 function _assert(condition, message) {
@@ -86,6 +86,10 @@ function assertEquals(o1, o2) {
 
 function assertNotEquals(o1, o2) {
     _assert(o1 !== o2, 'The objects are equal and should be different, ' + o1 + ' equals ' + o2);
+}
+
+function assertUndefined(o1) {
+    _assert(o1 === undefined, 'The object should be undefined, but is ' + o1);
 }
 
 function fail(message) {
