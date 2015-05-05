@@ -6,7 +6,7 @@ function _getStackTrace() {
     try {
         foo.bar;
     }
-    catch(e) {
+    catch (e) {
         result = _parseStackTrace(e);
     }
 
@@ -45,50 +45,52 @@ function GjsUnitException(message) {
     this.isGjsUnitException = true;
     this.message      = message;
     this.stackTrace   = _getStackTrace();
-};
+}
 
 function _processException(e, prefix) {
     let result = '\n' + prefix + e.message;
 
-    if (e.stackTrace)
+    if (e.stackTrace) {
       result += '\nStack trace:\n' + e.stackTrace;
+    }
 
     return result;
 };
 
 // Assertion functions
 function _assert(condition, message) {
-    if(!condition)
-        throw new GjsUnitException("GjsUnitException: " + message);
-};
+    if (!condition) {
+        throw new GjsUnitException('GjsUnitException: ' + message);
+    }
+}
 
 function assertNull(o) {
     _assert(o === null, "The object should be null and is not");
-};
+}
 
 function assertTrue(o) {
     _assert(o === true, "The input should be true and is false");
-};
+}
 
 function assertFalse(o) {
     _assert(o === false, "The input should be false and is true");
-};
+}
 
 function assertNotNull(o) {
     _assert(o !== null, "The object is null and should not be");
-};
+}
 
 function assertEquals(o1, o2) {
     _assert(o1 === o2, "The objects are differents and should be equal");
-};
+}
 
 function assertNotEquals(o1, o2) {
     _assert(o1 !== o2, "The objects are same and should be differents");
-};
+}
 
 function fail(message) {
     _assert(false, message);
-};
+}
 /// [End] Adapted from JsUnit
 
 // A suite is a child of this class
@@ -106,14 +108,12 @@ const Suite = new imports.lang.Class({
     // This function is called before each test execution
     // It is valid for all tests of this suite
     // If a different setup is needed, write a new suite
-    setup: function() {
-    },
+    setup: function() {},
 
     // This function is called after each test execution
     // It is valid for all tests of this suite
     // If a different teardown is needed, write a new suite
-    teardown: function() {
-    },
+    teardown: function() {},
 
     // Title property
     get title() {
@@ -128,9 +128,9 @@ const Suite = new imports.lang.Class({
     // @description of the test
     // @f the test function, this function must take the suite as parameter
     addTest: function(description, f) {
-        if(this._tests == null) {
-            this._tests = new Array();
-            this._descriptions = new Array();
+        if (this._tests === null) {
+            this._tests = [];
+            this._descriptions = [];
         }
 
         this._descriptions.push(description);
@@ -140,11 +140,13 @@ const Suite = new imports.lang.Class({
     // Writing this as a property would be better but I don't know how
     // to code indexed properties in JS
     getTestDescription: function(index) {
-        if(this._descriptions == null) {
+        if (this._descriptions === null) {
             return null;
-        } else if (index < 0 || index >= this._descriptions.length) {
-            throw new Error("Suite.test_description: Index is out of range");
-        } else {
+        }
+        else if (index < 0 || index >= this._descriptions.length) {
+            throw new Error('Suite.test_description: Index is out of range');
+        }
+        else {
             return this._descriptions[index];
         }
     },
@@ -152,17 +154,19 @@ const Suite = new imports.lang.Class({
     // Writing this as a property would be better but I don't know how
     // to code indexed properties in JS
     getTest: function(index) {
-        if(this._tests == null) {
+        if (this._tests === null) {
             return null;
-        } else if (index < 0 || index >= this._tests.length) {
-            throw new Error("Suite.test: Index is out of range");
-        } else {
+        }
+        else if (index < 0 || index >= this._tests.length) {
+            throw new Error('Suite.test: Index is out of range');
+        }
+        else {
             return this._tests[index];
         }
     },
 
     get nbTests() {
-        return this._tests == null ? 0 : this._tests.length;
+        return this._tests === null ? 0 : this._tests.length;
     }
 });
 
@@ -177,17 +181,17 @@ const Runner = new imports.lang.Class({
     },
 
     addSuite: function(suite) {
-        if(this._suites == null) {
-            this._suites = new Array();
+        if (this._suites === null) {
+            this._suites = [];
         }
 
         this._suites.push(suite);
     },
 
     run: function() {
-        if(this._suites == null) {
-            print("No test suite to run. End");
-            return;
+        if (this._suites === null) {
+            print('No test suite to run. End');
+            return 0;
         }
 
         let nbSuites = this._suites.length;
@@ -259,10 +263,10 @@ const Runner = new imports.lang.Class({
         let sep = new Array(length);
         for(let i = 0; i < length; i++) {
             sep[i] = '-';
-        };
+        }
 
         return sep.join('');
-    },
+    }
 });
 
 // The runner is a singleton, use only this instance.
