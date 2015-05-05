@@ -65,27 +65,27 @@ function _assert(condition, message) {
 }
 
 function assertNull(o) {
-    _assert(o === null, "The object should be null and is not");
+    _assert(o === null, 'The object should be null, but is ' + o);
 }
 
 function assertTrue(o) {
-    _assert(o === true, "The input should be true and is false");
+    _assert(o === true, 'The input should be true and is false');
 }
 
 function assertFalse(o) {
-    _assert(o === false, "The input should be false and is true");
+    _assert(o === false, 'The input should be false and is true');
 }
 
 function assertNotNull(o) {
-    _assert(o !== null, "The object is null and should not be");
+    _assert(o !== null, 'The object is null and should not be');
 }
 
 function assertEquals(o1, o2) {
-    _assert(o1 === o2, "The objects are differents and should be equal");
+    _assert(o1 === o2, 'The objects are different and should be equal, ' + o1 + ' is not ' + o2);
 }
 
 function assertNotEquals(o1, o2) {
-    _assert(o1 !== o2, "The objects are same and should be differents");
+    _assert(o1 !== o2, 'The objects are equal and should be different, ' + o1 + ' equals ' + o2);
 }
 
 function fail(message) {
