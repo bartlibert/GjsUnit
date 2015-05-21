@@ -35,7 +35,7 @@ function _parseStackTrace(e) {
 
     }
     else {
-        result = 'No stack trace';    
+        result = 'No stack trace';
     }
 
     return result;
@@ -182,6 +182,8 @@ const Runner = new imports.lang.Class({
     _init: function() {
         this._suites = null;
         this._instance = null;
+        this._filters = [];
+        this._negativeFilters = [];
     },
 
     addSuite: function(suite) {
@@ -192,6 +194,17 @@ const Runner = new imports.lang.Class({
         this._suites.push(suite);
     },
 
+    addFilter: function(filterString, negative) {
+        if (typeof filterString == 'undefined' || filterString === null) {
+            return;
+        }
+        if (negative === true) {
+            this._negativeFilters.push(filterString);
+            return;
+        }
+        this._filters.push(filterString);
+    },
+
     run: function() {
         if (this._suites === null) {
             print('No test suite to run. End');
@@ -199,19 +212,56 @@ const Runner = new imports.lang.Class({
         }
 
         let nbSuites = this._suites.length;
-        print("GjsUnit to run " + nbSuites + " suite(s)");
+        let gFailed = 0,
+            gErrors = 0,
+            gRun = 0,
+            gSkipped = 0;
 
-        let gFailed = 0, gErrors = 0, gRun = 0;
-
-        for(let i = 0; i < nbSuites; i++) {
+        for (let i = 0; i < nbSuites; i++) {
             let aSuite = this._suites[i];
             let nb = aSuite.nbTests;
-            let failed = 0, errors = 0;
+            let failed = 0,
+                errors = 0,
+                skipped = 0;
+            let suitePrinted = false;
             gRun += nb;
 
-            print("Starting suite: " + aSuite.title + " - " + nb + " test(s) to run");
+            for (let j = 0; j < nb; j++) {
+                let filterName = aSuite.title + '.' + aSuite.getTestDescription(j);
+                if (this._filters.length > 0) {
+                    let runTest = false;
+                    for (let filter in this._filters) {
+                        if (filterName.match(this._filters[filter])) {
+                            runTest = true;
+                            break;
+                        }
+                    }
+                    if (!runTest) {
+                        skipped++;
+                        continue;
+                    }
+                }
 
-            for(let j = 0; j < nb; j++) {
+                if (this._negativeFilters.length > 0) {
+                    let runTest = true;
+                    for (let filter in this._negativeFilters) {
+                        if (filterName.match(this._negativeFilters[filter])) {
+                            runTest = false;
+                            break;
+                        }
+                    }
+                    if (!runTest) {
+                        skipped++;
+                        continue;
+                    }
+                }
+
+                if (!suitePrinted) {
+                    let suiteTitle = 'Running suite ' + aSuite.title;
+                    print(suiteTitle);
+                    print(this._createSep(suiteTitle.length));
+                    suitePrinted = true;
+                }
 
                 let test = "Test: " + aSuite.getTestDescription(j) + "..........";
                 let stack = '';
@@ -244,19 +294,32 @@ const Runner = new imports.lang.Class({
             };
 
             // Display the results for the suite
-            let passed = nb - failed - errors;
-            let rate = (passed / nb * 100).toPrecision(4);
-            let trace = "Suite(" + rate + "%) - Run: " + nb + " - OK: " + passed + " - Failed: " + failed + " - Errors: " + errors;
-            print(this._createSep(trace.length));
-            print(trace);
+            let passed = nb - failed - errors - skipped;
+            let rate = (passed / (nb - skipped) * 100).toPrecision(4);
             gFailed += failed;
             gErrors += errors;
+            gSkipped += skipped;
+            // Display the results for the suite
+            if (nb == skipped) {
+                // no tests run
+                continue;
+            }
+            let trace = 'Suite(' + rate + '%) - Run: ' + (nb - skipped) + ' - OK: ' + passed +
+                ' - Failed: ' + failed + ' - Errors: ' + errors;
+            print(trace);
+            print(this._createSep(trace.length));
         };
 
         // Output global results
-        let gPassed = gRun - gFailed - gErrors;
-        let gRate = (gPassed / gRun * 100).toPrecision(4);
-        let trace = "GLOBAL(" + gRate + "%) - Suites: " + nbSuites + " - Tests: " + gRun  + " - OK: " + gPassed + " - Failed: " + gFailed + " - Errors: " + gErrors;
+        let gPassed = gRun - gFailed - gErrors - gSkipped;
+        if (gRun == gSkipped) {
+            // no tests run
+            print('No tests run');
+            return 0;
+        }
+        let gRate = (gPassed / (gRun - gSkipped) * 100).toPrecision(4);
+        let trace = 'GLOBAL(' + gRate + '%) - Suites: ' + nbSuites + ' - Tests: ' + (gRun - gSkipped) +
+            ' - OK: ' + gPassed + ' - Failed: ' + gFailed + ' - Errors: ' + gErrors;
         let sep = this._createSep(trace.length);
         print(sep);
         print(trace);
