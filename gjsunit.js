@@ -184,6 +184,7 @@ const Runner = new imports.lang.Class({
         this._instance = null;
         this._filters = [];
         this._negativeFilters = [];
+        this.stopOnFail = false;
     },
 
     addSuite: function(suite) {
@@ -291,7 +292,12 @@ const Runner = new imports.lang.Class({
                 if(stack.length > 0) {
                     print(stack);
                 }
-            };
+                if (this.stopOnFail === true) {
+                    if ((failed + errors) > 0) {
+                        return 1;
+                    }
+                }
+            }
 
             // Display the results for the suite
             let passed = nb - failed - errors - skipped;
