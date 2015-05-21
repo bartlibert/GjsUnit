@@ -223,6 +223,8 @@ const Runner = new imports.lang.Class({
             gErrors = 0,
             gRun = 0,
             gSkipped = 0;
+        let failedTests = [];
+        let erroredTests = [];
 
         for (let i = 0; i < nbSuites; i++) {
             let aSuite = this._suites[i];
@@ -270,28 +272,32 @@ const Runner = new imports.lang.Class({
                     suitePrinted = true;
                 }
 
-                let test = "Test: " + aSuite.getTestDescription(j) + "..........";
+                let test = aSuite.getTestDescription(j);
                 let stack = '';
 
                 try {
                     aSuite.setup();
                     aSuite.getTest(j)();
                     aSuite.teardown();
-                    test = "OK";
+                    test = ok_prefix + '[   OK   ] ' + test + reset_suffix;
                 }
                 catch(e) {
                     if (typeof(e.isGjsUnitException) != 'undefined' && e.isGjsUnitException) {
                         stack += '\n' + e.message;
                         stack += '\n' + e.stackTrace;
+                        failedTests.push(aSuite.title + '.' + aSuite.getTestDescription(j));
                         failed++;
+                        test = error_prefix + '[  FAIL  ] ' + test + reset_suffix;
                     }
                     else {
                         stack += '\n' + e;
                         stack += '\n' + _parseStackTrace(e);
+                        erroredTests.push(aSuite.title + '.' + aSuite.getTestDescription(j));
                         errors++;
+                        test = error_prefix + bold_prefix + '[  ERROR ] ' + test + bold_suffix +
+                            reset_suffix;
                     }
 
-                    test += "KO";
                 }
 
                 print(test);
@@ -305,7 +311,6 @@ const Runner = new imports.lang.Class({
                 }
             }
 
-            // Display the results for the suite
             let passed = nb - failed - errors - skipped;
             let rate = (passed / (nb - skipped) * 100).toPrecision(4);
             gFailed += failed;
@@ -318,9 +323,17 @@ const Runner = new imports.lang.Class({
             }
             let trace = 'Suite(' + rate + '%) - Run: ' + (nb - skipped) + ' - OK: ' + passed +
                 ' - Failed: ' + failed + ' - Errors: ' + errors;
+            let sep = this._createSep(trace.length);
+            if (failed > 0) {
+                trace = error_prefix + trace + reset_suffix;
+            }
+            if (errors > 0) {
+                trace = bold_prefix + error_prefix + trace + reset_suffix + bold_suffix;
+            }
+            print(sep);
             print(trace);
-            print(this._createSep(trace.length));
-        };
+            print(sep);
+        }
 
         // Output global results
         let gPassed = gRun - gFailed - gErrors - gSkipped;
@@ -333,9 +346,39 @@ const Runner = new imports.lang.Class({
         let trace = 'GLOBAL(' + gRate + '%) - Suites: ' + nbSuites + ' - Tests: ' + (gRun - gSkipped) +
             ' - OK: ' + gPassed + ' - Failed: ' + gFailed + ' - Errors: ' + gErrors;
         let sep = this._createSep(trace.length);
+        if (gFailed > 0) {
+            trace = error_prefix + trace + reset_suffix;
+        }
+        if (gErrors > 0) {
+            trace = bold_prefix + error_prefix + trace + reset_suffix + bold_suffix;
+        }
         print(sep);
         print(trace);
         print(sep);
+
+        if (gFailed > 0) {
+            let title = 'Failed tests: ';
+            print(title);
+            print(this._createSep(title.length));
+            for (let i in failedTests) {
+                if (failedTests.hasOwnProperty(i)) {
+                    print(error_prefix + failedTests[i] + reset_suffix);
+                }
+            }
+            print('\n');
+        }
+
+        if (gErrors > 0) {
+            let title = 'Tests with errors: ';
+            print(title);
+            print(this._createSep(title.length));
+            for (let i in erroredTests) {
+                if (erroredTests.hasOwnProperty(i)) {
+                    print(error_prefix + bold_prefix + erroredTests[i] + bold_suffix + reset_suffix);
+                }
+            }
+            print('\n');
+        }
     },
 
     _createSep: function(length) {
