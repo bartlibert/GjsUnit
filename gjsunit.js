@@ -17,7 +17,7 @@ function _getStackTrace() {
     }
 
     return result;
-};
+}
 
 function _parseStackTrace(e) {
     let result = '';
@@ -32,9 +32,9 @@ function _parseStackTrace(e) {
             let line = ' at ';
             let name = framedata.split('@')[0].replace('<', '');
             line += name === '' ? '_anonymous_' : name;
-            line += " (";
+            line += ' (';
             line += framedata.substring(framedata.lastIndexOf('/') + 1);
-            line += ")";
+            line += ')';
 
             result += line + '\n';
         }
@@ -45,7 +45,7 @@ function _parseStackTrace(e) {
     }
 
     return result;
-};
+}
 
 function GjsUnitException(message) {
     this.isGjsUnitException = true;
