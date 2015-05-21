@@ -281,7 +281,7 @@ const Runner = new imports.lang.Class({
                     aSuite.teardown();
                     test = ok_prefix + '[   OK   ] ' + test + reset_suffix;
                 }
-                catch(e) {
+                catch (e) {
                     if (typeof(e.isGjsUnitException) != 'undefined' && e.isGjsUnitException) {
                         stack += '\n' + e.message;
                         stack += '\n' + e.stackTrace;
@@ -304,7 +304,7 @@ const Runner = new imports.lang.Class({
                 }
 
                 print(test);
-                if(stack.length > 0) {
+                if (stack.length > 0) {
                     print(stack);
                 }
                 if (this.stopOnFail === true) {
@@ -319,6 +319,7 @@ const Runner = new imports.lang.Class({
             gFailed += failed;
             gErrors += errors;
             gSkipped += skipped;
+
             // Display the results for the suite
             if (nb == skipped) {
                 // no tests run
@@ -390,7 +391,7 @@ const Runner = new imports.lang.Class({
 
     _createSep: function(length) {
         let sep = new Array(length);
-        for(let i = 0; i < length; i++) {
+        for (let i = 0; i < length; i++) {
             sep[i] = '-';
         }
 
