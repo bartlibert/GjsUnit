@@ -37,7 +37,11 @@ function _parseStackTrace(e) {
         }
         line += name === '' ? '_anonymous_' : name;
         line += ' (';
-        line += framedata.substring(framedata.lastIndexOf('/') + 1);
+        line += filename;
+        let lineNum = framedata.match(/(:\d+)$/)[1];
+        if (lineNum) {
+            line += lineNum;
+        }
         line += ')';
 
         result += line + '\n';
