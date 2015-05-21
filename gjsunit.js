@@ -382,6 +382,10 @@ const Runner = new imports.lang.Class({
             }
             print('\n');
         }
+        if ((gErrors + gFailed) > 0) {
+            return 1;
+        }
+        return 0;
     },
 
     _createSep: function(length) {
