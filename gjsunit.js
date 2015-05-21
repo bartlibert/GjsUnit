@@ -297,7 +297,7 @@ const Runner = new imports.lang.Class({
                         test = error_prefix + bold_prefix + '[  ERROR ] ' + test + bold_suffix +
                             reset_suffix;
                     }
-
+                    aSuite.teardown();
                 }
 
                 print(test);
