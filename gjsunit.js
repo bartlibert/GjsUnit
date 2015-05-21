@@ -20,31 +20,28 @@ function _getStackTrace() {
 }
 
 function _parseStackTrace(e) {
+
+    if ((e === null) || (e.stack === null)) {
+        return 'No stack trace';
+    }
+    let stacklist = e.stack.split('\n');
+
     let result = '';
+    // We start at 2 because we don't need to get the 'getStackTrace' &
+    // 'GjsUnitException' lines
+    for (let i = 0; i < stacklist.length - 1; i++) {
+        let framedata = stacklist[i];
+        let line = ' at ';
+        let name = framedata.split('@')[0].replace('<', '');
+        line += name === '' ? '_anonymous_' : name;
+        line += ' (';
+        line += framedata.substring(framedata.lastIndexOf('/') + 1);
+        line += ')';
 
-    if ((e !== null) && (e.stack !== null)) {
-        let stacklist = e.stack.split('\n');
-
-        // We start at 2 because we don't need to get the 'getStackTrace' &
-        // 'GjsUnitException' lines
-        for (let i = 0; i < stacklist.length - 1; i++) {
-            let framedata = stacklist[i];
-            let line = ' at ';
-            let name = framedata.split('@')[0].replace('<', '');
-            line += name === '' ? '_anonymous_' : name;
-            line += ' (';
-            line += framedata.substring(framedata.lastIndexOf('/') + 1);
-            line += ')';
-
-            result += line + '\n';
-        }
-
+        result += line + '\n';
     }
-    else {
-        result = 'No stack trace';
-    }
-
     return result;
+
 }
 
 function GjsUnitException(message) {
