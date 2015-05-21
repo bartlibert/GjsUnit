@@ -1,4 +1,10 @@
 /// [Begin] Adapted from JsUnit
+const error_prefix = '\u001B[31m';
+const ok_prefix = '\u001B[32m';
+const bold_prefix = '\u001B[1m';
+const reset_suffix = '\u001B[39m';
+const bold_suffix = '\u001B[22m';
+const message_prefix = '\u001B[33m';
 function _getStackTrace() {
     var result = '';
 
@@ -271,7 +277,7 @@ const Runner = new imports.lang.Class({
                     aSuite.setup();
                     aSuite.getTest(j)();
                     aSuite.teardown();
-                    test += "OK";
+                    test = "OK";
                 }
                 catch(e) {
                     if (typeof(e.isGjsUnitException) != 'undefined' && e.isGjsUnitException) {
