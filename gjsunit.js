@@ -291,6 +291,9 @@ const Runner = new imports.lang.Class({
                     }
                     else {
                         stack += '\n' + e;
+                        if (typeof(e.message) != 'undefined') {
+                            stack += '\n' + e.message;
+                        }
                         stack += '\n' + _parseStackTrace(e);
                         erroredTests.push(aSuite.title + '.' + aSuite.getTestDescription(j));
                         errors++;
