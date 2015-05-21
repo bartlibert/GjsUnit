@@ -401,3 +401,5 @@ const Runner = new imports.lang.Class({
 
 // The runner is a singleton, use only this instance.
 var instance = new Runner();
+
+/* vi: set expandtab tabstop=4 shiftwidth=4: */
