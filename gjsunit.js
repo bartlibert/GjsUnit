@@ -117,7 +117,7 @@ function assertArrayEquals(o1, o2) {
 function assertArrayContainsElementThatMatches(o1, o2) {
     assertNotNull(o1);
     assertDefined(o1);
-    if (o1.filter(ow).length === 0) {
+    if (o1.filter(o2).length === 0) {
         fail('Array ' + o1 + ' does not contain element that matches ' + o2);
     }
 }
