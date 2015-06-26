@@ -101,6 +101,27 @@ function assertUndefined(o1) {
     _assert(o1 === undefined, 'The object should be undefined, but is ' + o1);
 }
 
+function assertDefined(o1) {
+    _assert(o1 !== undefined, 'The object should be defined, but it is ' + o1);
+}
+
+function assertArrayEquals(o1, o2) {
+    _assert(o1.length == o2.length, 'Arrays are not of equal length: ' + o1 + ' is not ' + o2);
+    for (let i in o1) {
+        if (o2.indexOf(o1[i]) == -1) {
+            fail('Arrays don\'t contain same elements: ' + o1 + ' is not ' + o2);
+        }
+    }
+}
+
+function assertArrayContainsElementThatMatches(o1, o2) {
+    assertNotNull(o1);
+    assertDefined(o1);
+    if (o1.filter(ow).length === 0) {
+        fail('Array ' + o1 + ' does not contain element that matches ' + o2);
+    }
+}
+
 function fail(message) {
     _assert(false, message);
 }
