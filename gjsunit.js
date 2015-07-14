@@ -105,7 +105,7 @@ function assertDefined(o1) {
     _assert(o1 !== undefined, 'The object should be defined, but it is ' + o1);
 }
 
-function assertArrayEquals(o1, o2) {
+function _assertArrayEquals_default(o1, o2) {
     _assert(o1.length == o2.length, 'Arrays are not of equal length: ' + o1 + ' is not ' + o2);
     for (let i in o1) {
         if (o2.indexOf(o1[i]) == -1) {
@@ -113,6 +113,44 @@ function assertArrayEquals(o1, o2) {
         }
     }
 }
+
+function _assertArrayEquals_custom(o1, o2, customCompare) {
+    for (let i in o2) {
+        if (o2.hasOwnProperty(i)) {
+            if (_isInArray(o2[i], o1, customCompare) === false) {
+                fail('Arrays don\'t contain the same element: ' + o1 + ' is not ' + o2);
+            }
+        }
+    }
+}
+
+function _isInArray(element, array, customCompare) {
+    for (let i in array) {
+        if (array.hasOwnProperty(i)) {
+            if (customCompare(array[i], element) === true) {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+function assertArrayEquals(o1, o2, customCompare) {
+    if (o1.length != o2.length) {
+        fail('Arrays are not of equal length: ' + o1 + ' is not ' + o2);
+        return;
+    }
+    if (typeof customCompare == 'undefined') {
+        _assertArrayEquals_default(o1, o2);
+        return;
+    }
+    if (typeof customCompare == 'function') {
+        _assertArrayEquals_custom(o1, o2, customCompare);
+        return;
+    }
+    fail('Custom compare function expected, but got ' + typeof customCompare);
+}
+
 
 function assertArrayContainsElementThatMatches(o1, o2) {
     assertNotNull(o1);
